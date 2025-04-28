@@ -3,8 +3,7 @@
 # 共通設定ファイルを読み込む
 source ../../config/common.conf
 
-# 共通ログディレクトリ
-LOG_DIR="/tmp/no_encrypt_logs"
+# 共通ログディレクトリの作成
 mkdir -p ${LOG_DIR}
 
 # リモート側のスクリプト実行時にすべての環境変数を渡す

@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# 共通設定ファイルを読み込む
-source ../../config/common.conf
-
-# 共通ログディレクトリ
-LOG_DIR="../../log/no_encrypt"
-mkdir -p ${LOG_DIR}
-
 # ネットワーク設定を適用する関数
 apply_network_config() {
     local MODE=$1
