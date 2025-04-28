@@ -7,10 +7,7 @@ source ../../config/common.conf
 LOG_DIR="/tmp/no_encrypt_logs"
 mkdir -p ${LOG_DIR}
 
-# リモートサーバーに共通設定ファイルをコピー
-sshpass -p "$R_PASS" scp ../../config/common.conf $R_USER@$R_MGMT_IP:/tmp/common.conf
-
-# リモート側のスクリプト実行時に共通設定ファイルのパスを指定
+# リモート側のスクリプト実行時にすべての環境変数を渡す
 execute_task() {
     local MODE=$1
     local COMMAND=$2
@@ -20,7 +17,8 @@ execute_task() {
         ./${COMMAND}.sh local
     elif [[ "$MODE" == "remote" ]]; then
         echo "リモート側の${COMMAND}を実行中..."
-        sshpass -p "$R_PASS" ssh -o StrictHostKeyChecking=no $R_USER@$R_MGMT_IP "source /tmp/common.conf && bash -s" < ./${COMMAND}.sh remote
+        sshpass -p "$R_PASS" ssh -o StrictHostKeyChecking=no $R_USER@$R_MGMT_IP \
+            "$(env | grep -E '^(L_|R_|DEFAULT_CLIENT_IP)' | xargs) bash -s" < ./${COMMAND}.sh remote
     else
         echo "無効なモード: $MODE"
         exit 1
