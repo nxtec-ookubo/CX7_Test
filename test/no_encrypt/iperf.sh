@@ -25,18 +25,19 @@ run_iperf() {
     ${client_cmd} >> ${output_file}
 }
 
-# Check if CLIENT_IP is provided as an argument
-if [[ -n "$1" ]]; then
+# Check if CLIENT_IP and MODE are provided as arguments
+if [[ -n "$1" && -n "$2" ]]; then
     CLIENT_IP="$1"
+    MODE="$2"
 else
-    echo "使用方法: $0 <CLIENT_IP>"
+    echo "使用方法: $0 <CLIENT_IP> [local|remote]"
     exit 1
 fi
 
 # CPU 設定を選択
-if [[ "$2" == "local" ]]; then
+if [[ "$MODE" == "local" ]]; then
     CPU=${L_CPU}
-elif [[ "$2" == "remote" ]]; then
+elif [[ "$MODE" == "remote" ]]; then
     CPU=${R_CPU}
 else
     echo "使用方法: $0 <CLIENT_IP> [local|remote]"
