@@ -30,26 +30,55 @@ execute_task() {
     fi
 }
 
+# ログ出力用の関数
+log() {
+    local MESSAGE=$1
+    local TYPE=$2
+    local TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+
+    case $TYPE in
+        INFO)
+            echo -e "\033[1;34m[INFO] [$TIMESTAMP] $MESSAGE\033[0m" | tee -a ${LOG_DIR}/run.log
+            ;;
+        SUCCESS)
+            echo -e "\033[1;32m[SUCCESS] [$TIMESTAMP] $MESSAGE\033[0m" | tee -a ${LOG_DIR}/run.log
+            ;;
+        ERROR)
+            echo -e "\033[1;31m[ERROR] [$TIMESTAMP] $MESSAGE\033[0m" | tee -a ${LOG_DIR}/run.log
+            ;;
+        *)
+            echo "[UNKNOWN] [$TIMESTAMP] $MESSAGE" | tee -a ${LOG_DIR}/run.log
+            ;;
+    esac
+}
+
 # 実行フロー
-# ローカルおよびリモートのセットアップを実行
+log "ローカルおよびリモートのセットアップを開始します。" INFO
 execute_task local setup  # ローカル環境の初期設定を実行
+log "ローカルのセットアップが完了しました。" SUCCESS
 execute_task remote setup  # リモート環境の初期設定を実行
+log "リモートのセットアップが完了しました。" SUCCESS
 
 # iperf.sh を実行
-# ネットワーク帯域幅を測定するためのテストを実行
-CLIENT_IP=${CLIENT_IP:-$DEFAULT_CLIENT_IP}  # config/common.conf からデフォルト値を取得
+log "iperf.sh を実行します。" INFO
 ./iperf.sh ${CLIENT_IP}
+log "iperf.sh の実行が完了しました。" SUCCESS
 
 # netperf.sh を実行
-# ネットワークの遅延やトランザクションレートを測定するためのテストを実行
+log "netperf.sh を実行します。" INFO
 ./netperf.sh ${CLIENT_IP}
+log "netperf.sh の実行が完了しました。" SUCCESS
 
 # ib_write_bw.sh を実行
-# InfiniBand の帯域幅を測定するためのテストを実行
+log "ib_write_bw.sh を実行します。" INFO
 ./ib_write_bw.sh ${CLIENT_IP}
+log "ib_write_bw.sh の実行が完了しました。" SUCCESS
 
 # ローカルおよびリモートのティアダウンを実行
+log "ローカルおよびリモートのティアダウンを開始します。" INFO
 execute_task local teardown  # ローカル環境の後処理を実行
+log "ローカルのティアダウンが完了しました。" SUCCESS
 execute_task remote teardown  # リモート環境の後処理を実行
+log "リモートのティアダウンが完了しました。" SUCCESS
 
-echo "全ての処理が完了しました。"  # 全てのタスクが正常に完了したことを通知
+log "全ての処理が完了しました。" SUCCESS
