@@ -60,7 +60,7 @@ log "リモートのセットアップが完了しました。" SUCCESS
 
 # iperf.sh を実行
 log "iperf.sh を実行します。" INFO
-./iperf.sh ${CLIENT_IP}
+./iperf.sh ${CLIENT_IP} local
 log "iperf.sh の実行が完了しました。" SUCCESS
 
 # netperf.sh を実行
